@@ -89,6 +89,26 @@ describe Api::V1::ArticlesController do
         expect(json['code']).to eq(Exceptions::ErrorCode::PARM_MISSING_CODE)
       end
     end
+
+    context 'when with invalid parameter' do
+      before do
+        post :create, params: { article: {
+            title: 'Test title',
+            body: 'Test body',
+            date: 123,
+            tags: ['tag1', 'tag2']
+        } }
+      end
+
+      it 'return 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'return PARM_MISSING_CODE error code' do
+        expect(response.header['Content-Type']).to match(/json/)
+        expect(json['code']).to eq(Exceptions::ErrorCode::VALIDATION_ERROR_CODE)
+      end
+    end
   end
 
   describe '#index' do
